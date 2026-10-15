@@ -1,0 +1,48 @@
+using System.Text.Json;
+
+namespace DeskMate.Core;
+
+/// <summary>User settings, stored in %APPDATA%\DeskMate\settings.json.</summary>
+internal sealed class Settings
+{
+    public static readonly string Folder =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DeskMate");
+    public static readonly string FilePath = Path.Combine(Folder, "settings.json");
+
+    public bool StartWithWindows { get; set; } = true;
+
+    // Keep awake (the on/off state itself is NOT saved — it always starts Off).
+    public bool KeepScreenOn { get; set; } = true;
+    public string KeepAwakeHotkey { get; set; } = "Ctrl+Alt+K";
+
+    // Color picker / cursor coordinates
+    public string ColorFormat { get; set; } = "HEX"; // HEX | RGB
+    public string ColorPickerHotkey { get; set; } = "Ctrl+Alt+C";
+    public string CoordsHotkey { get; set; } = "Ctrl+Alt+X";
+    public string OverlayHotkey { get; set; } = "Ctrl+Alt+O";
+
+    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
+
+    public static Settings Load()
+    {
+        try
+        {
+            if (File.Exists(FilePath))
+                return JsonSerializer.Deserialize<Settings>(File.ReadAllText(FilePath)) ?? new Settings();
+        }
+        catch { /* corrupt file -> defaults */ }
+        var fresh = new Settings();
+        fresh.Save();
+        return fresh;
+    }
+
+    public void Save()
+    {
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            File.WriteAllText(FilePath, JsonSerializer.Serialize(this, JsonOptions));
+        }
+        catch { /* non-fatal */ }
+    }
+}

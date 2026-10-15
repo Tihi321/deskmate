@@ -19,6 +19,16 @@ internal sealed class HotkeyManager : NativeWindow, IDisposable
         return true;
     }
 
+    /// <summary>Releases every hotkey registered with this handler, freeing the combo for other apps.</summary>
+    public void Unregister(Action handler)
+    {
+        foreach (int id in _handlers.Where(kv => kv.Value == handler).Select(kv => kv.Key).ToList())
+        {
+            Native.UnregisterHotKey(Handle, id);
+            _handlers.Remove(id);
+        }
+    }
+
     /// <summary>Parses "Ctrl+Alt+K", "win+shift+F1", "Alt+1" (case-insensitive) into RegisterHotKey args.</summary>
     public static bool TryParse(string? combo, out uint modifiers, out uint vk)
     {

@@ -2,31 +2,43 @@ using DeskMate.Core;
 
 namespace DeskMate.Helpers;
 
-/// <summary>Hotkey copies the color under the mouse (HEX or RGB). Keeps a short history.</summary>
+/// <summary>
+/// Hotkey copies the color under the mouse (HEX or RGB). Keeps a short history.
+/// Can be disabled from the menu, which releases the hotkey for other apps.
+/// </summary>
 internal sealed class ColorPickerHelper : IHelper
 {
     private const int MaxRecent = 8;
 
     private HelperContext _ctx = null!;
     private readonly List<Color> _recent = new();
+    private ToolStripMenuItem _root = null!;
+    private ToolStripMenuItem _enabledItem = null!;
+    private ToolStripMenuItem _pickItem = null!;
     private ToolStripMenuItem _recentMenu = null!;
     private ToolStripMenuItem _formatMenu = null!;
 
     public void Initialize(HelperContext context)
     {
         _ctx = context;
-        context.RegisterHotkey(context.Settings.ColorPickerHotkey, Pick);
+        if (context.Settings.ColorPickerEnabled) context.RegisterHotkey(context.Settings.ColorPickerHotkey, Pick);
     }
 
     public IEnumerable<ToolStripItem> CreateMenuItems()
     {
-        var root = new ToolStripMenuItem("Color picker");
+        _root = new ToolStripMenuItem("Color picker");
 
-        root.DropDownItems.Add(new ToolStripMenuItem("Pick color under cursor")
+        _enabledItem = new ToolStripMenuItem("Enabled");
+        _enabledItem.Click += (_, _) => SetEnabled(!_ctx.Settings.ColorPickerEnabled);
+        _root.DropDownItems.Add(_enabledItem);
+        _root.DropDownItems.Add(new ToolStripSeparator());
+
+        _pickItem = new ToolStripMenuItem("Pick color under cursor")
         {
             Enabled = false,
             ShortcutKeyDisplayString = _ctx.Settings.ColorPickerHotkey,
-        });
+        };
+        _root.DropDownItems.Add(_pickItem);
 
         _formatMenu = new ToolStripMenuItem("Copy format");
         foreach (var format in new[] { "HEX", "RGB" })
@@ -41,13 +53,35 @@ internal sealed class ColorPickerHelper : IHelper
             };
             _formatMenu.DropDownItems.Add(item);
         }
-        root.DropDownItems.Add(_formatMenu);
+        _root.DropDownItems.Add(_formatMenu);
 
         _recentMenu = new ToolStripMenuItem("Recent colors");
         RebuildRecent();
-        root.DropDownItems.Add(_recentMenu);
+        _root.DropDownItems.Add(_recentMenu);
 
-        yield return root;
+        UpdateMenu();
+        yield return _root;
+    }
+
+    private void SetEnabled(bool enabled)
+    {
+        _ctx.Settings.ColorPickerEnabled = enabled;
+        _ctx.Settings.Save();
+
+        if (enabled) _ctx.RegisterHotkey(_ctx.Settings.ColorPickerHotkey, Pick);
+        else _ctx.Hotkeys.Unregister(Pick);
+
+        UpdateMenu();
+    }
+
+    private void UpdateMenu()
+    {
+        bool enabled = _ctx.Settings.ColorPickerEnabled;
+        _root.Text = enabled ? "Color picker" : "Color picker (off)";
+        _enabledItem.Checked = enabled;
+        _pickItem.ShortcutKeyDisplayString = enabled ? _ctx.Settings.ColorPickerHotkey : null;
+        _formatMenu.Enabled = enabled;
+        _recentMenu.Enabled = enabled;
     }
 
     private void Pick()

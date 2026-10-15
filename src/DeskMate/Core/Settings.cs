@@ -17,6 +17,7 @@ internal sealed class Settings
     public string KeepAwakeHotkey { get; set; } = "Ctrl+Alt+K";
 
     // Color picker / cursor coordinates
+    public bool ColorPickerEnabled { get; set; } = true;
     public string ColorFormat { get; set; } = "HEX"; // HEX | RGB
     public string ColorPickerHotkey { get; set; } = "Ctrl+Alt+C";
     public string CoordsHotkey { get; set; } = "Ctrl+Alt+X";

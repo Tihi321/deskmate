@@ -14,7 +14,9 @@ Right-click the tray icon for everything else (Start with Windows, edit settings
 ## Requirements
 
 - Windows 10/11
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) to build (only the .NET 8 Desktop Runtime is needed to run)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) to build (only the .NET 8 Desktop Runtime is needed to run).
+  No admin? Install it per-user: `& ([scriptblock]::Create((irm https://dot.net/v1/dotnet-install.ps1))) -Channel 8.0`
+  (lands in `%LOCALAPPDATA%\Microsoft\dotnet` — add that to your PATH).
 
 ## Install
 
@@ -24,7 +26,8 @@ cd deskmate
 .\scripts\install.ps1
 ```
 
-This publishes `DeskMate.exe` to `%LOCALAPPDATA%\DeskMate` and starts it. On launch DeskMate adds itself to
+This publishes `DeskMate.exe` to `%LOCALAPPDATA%\DeskMate` and starts it. If the .NET 8 Desktop Runtime isn't
+installed machine-wide, the exe is built self-contained (~65 MB) so it still starts at login; force that with `-SelfContained`. On launch DeskMate adds itself to
 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, so it starts with Windows (toggle in the menu).
 
 Uninstall: `.\scripts\uninstall.ps1` (add `-KeepSettings` to keep your settings).
@@ -40,6 +43,8 @@ dotnet run --project src/DeskMate
 ## Settings
 
 `%APPDATA%\DeskMate\settings.json` — open via **Edit settings…** in the tray menu. Restart DeskMate after editing.
+Hotkeys are `Modifier+...+Key`, case-insensitive: modifiers `Ctrl`, `Alt`, `Shift`, `Win`; keys like `K`, `1`, `F5`, `Home`.
+At least one modifier is required.
 
 ```json
 {
@@ -65,7 +70,7 @@ internal sealed class MyHelper : IHelper
     public void Initialize(HelperContext ctx)
     {
         _ctx = ctx;
-        ctx.Hotkeys.Register("Ctrl+Alt+M", () => ctx.Notify("Hello", "MyHelper ran"));
+        ctx.RegisterHotkey("Ctrl+Alt+M", () => ctx.Notify("Hello", "MyHelper ran"));
     }
 
     public IEnumerable<ToolStripItem> CreateMenuItems()

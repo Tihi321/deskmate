@@ -36,8 +36,7 @@ internal sealed class KeepAwakeHelper : IHelper
     {
         _ctx = context;
         _timer.Tick += (_, _) => OnTick();
-        if (!context.Hotkeys.Register(context.Settings.KeepAwakeHotkey, Toggle))
-            context.Notify("DeskMate", $"Hotkey {context.Settings.KeepAwakeHotkey} is unavailable.");
+        context.RegisterHotkey(context.Settings.KeepAwakeHotkey, Toggle);
     }
 
     public IEnumerable<ToolStripItem> CreateMenuItems()

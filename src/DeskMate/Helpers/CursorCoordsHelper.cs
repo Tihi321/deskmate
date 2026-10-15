@@ -12,10 +12,8 @@ internal sealed class CursorCoordsHelper : IHelper
     public void Initialize(HelperContext context)
     {
         _ctx = context;
-        if (!context.Hotkeys.Register(context.Settings.CoordsHotkey, CopyCoords))
-            context.Notify("DeskMate", $"Hotkey {context.Settings.CoordsHotkey} is unavailable.");
-        if (!context.Hotkeys.Register(context.Settings.OverlayHotkey, ToggleOverlay))
-            context.Notify("DeskMate", $"Hotkey {context.Settings.OverlayHotkey} is unavailable.");
+        context.RegisterHotkey(context.Settings.CoordsHotkey, CopyCoords);
+        context.RegisterHotkey(context.Settings.OverlayHotkey, ToggleOverlay);
     }
 
     public IEnumerable<ToolStripItem> CreateMenuItems()

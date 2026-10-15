@@ -9,7 +9,18 @@ internal sealed record HelperContext(
     Settings Settings,
     HotkeyManager Hotkeys,
     Action<string, string> Notify,
-    Action StateChanged);
+    Action StateChanged)
+{
+    /// <summary>Registers a global hotkey; tells the user if the combo is invalid or taken.</summary>
+    public bool RegisterHotkey(string combo, Action handler)
+    {
+        if (Hotkeys.Register(combo, handler)) return true;
+        Notify("DeskMate", HotkeyManager.TryParse(combo, out _, out _)
+            ? $"Hotkey {combo} is already used by another app."
+            : $"Hotkey \"{combo}\" is not valid. Use e.g. Ctrl+Alt+K.");
+        return false;
+    }
+}
 
 /// <summary>
 /// A DeskMate feature. To add one: implement this, then add it to the list in TrayApp.

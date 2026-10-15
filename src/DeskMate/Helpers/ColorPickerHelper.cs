@@ -15,8 +15,7 @@ internal sealed class ColorPickerHelper : IHelper
     public void Initialize(HelperContext context)
     {
         _ctx = context;
-        if (!context.Hotkeys.Register(context.Settings.ColorPickerHotkey, Pick))
-            context.Notify("DeskMate", $"Hotkey {context.Settings.ColorPickerHotkey} is unavailable.");
+        context.RegisterHotkey(context.Settings.ColorPickerHotkey, Pick);
     }
 
     public IEnumerable<ToolStripItem> CreateMenuItems()

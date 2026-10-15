@@ -26,12 +26,23 @@ Windows tray app (C# / .NET 8 WinForms) with small everyday helpers. Starts with
 - [x] Start with Windows toggle; Edit settings; Exit
 - [x] `scripts/install.ps1` / `uninstall.ps1`, GitHub Actions build
 
-## Next: verify v0.1
-- [ ] `dotnet build` – fix any compile errors
-- [ ] Test on a 4K / 150 % scaling monitor (overlay size, picked pixel matches cursor)
-- [ ] Test multi-monitor (negative coordinates, overlay flipping at screen edges)
-- [ ] Keep awake: confirm with `powercfg /requests` (should list DeskMate under SYSTEM / DISPLAY)
-- [ ] Reboot test: autostarts, keep awake is Off
+## Verify v0.1
+- [x] `dotnet build` – 0 warnings / 0 errors (.NET SDK 8.0.426, installed per-user to `%LOCALAPPDATA%\Microsoft\dotnet`)
+- [x] Smoke test (2026-10-15): all 4 hotkeys registered while running and released on exit;
+      `Ctrl+Alt+X` → `1776, 684`, `Ctrl+Alt+C` → `#181818` on clipboard; overlay window shows/hides
+- [x] Keep awake: system execution state `0x0` → `0x3` (SYSTEM + DISPLAY required) → `0x0` on toggle
+      (checked via `CallNtPowerInformation(SystemExecutionState)` — `powercfg /requests` needs admin)
+- [x] Self-contained Release exe starts without any .NET on PATH / `DOTNET_ROOT`
+- [ ] Test on a 4K / 150 % scaling monitor (overlay size, picked pixel matches cursor) – manual
+- [ ] Test multi-monitor (negative coordinates, overlay flipping at screen edges) – manual
+- [ ] Reboot test: autostarts, keep awake is Off – manual
+
+### Fixes made during verification
+- Hotkey parser: was case-sensitive (`ctrl+alt+k` failed) and ignored `Win`; now tolerant, supports `Win`.
+  Failure message now says whether the combo is invalid or taken by another app (`HelperContext.RegisterHotkey`).
+- `settings.json` wrote `Ctrl+Alt+K`; now readable `Ctrl+Alt+K`.
+- `install.ps1`: finds a per-user `dotnet`, and builds self-contained when no machine-wide
+  .NET 8 Desktop Runtime exists (a framework-dependent exe showed "You must install .NET" otherwise).
 
 ## v0.2 – ideas (pick)
 - [ ] Custom keep-awake duration ("Until 17:30…" / enter minutes)

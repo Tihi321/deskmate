@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace DeskMate.Core;
@@ -21,7 +22,12 @@ internal sealed class Settings
     public string CoordsHotkey { get; set; } = "Ctrl+Alt+X";
     public string OverlayHotkey { get; set; } = "Ctrl+Alt+O";
 
-    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true,
+        // Keep "Ctrl+Alt+K" readable instead of "Ctrl+Alt+K" — this file is hand-edited.
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
 
     public static Settings Load()
     {

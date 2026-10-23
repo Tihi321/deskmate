@@ -23,6 +23,20 @@ internal sealed class Settings
     public string CoordsHotkey { get; set; } = "Ctrl+Alt+X";
     public string OverlayHotkey { get; set; } = "Ctrl+Alt+O";
 
+    // System audio recorder
+    public bool AudioRecorderEnabled { get; set; } = true;
+    public string AudioRecordHotkey { get; set; } = "Ctrl+Alt+R";
+    public string AudioRecordingFolder { get; set; } =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Sounds");
+
+    public string GetResolvedAudioFolder()
+    {
+        string path = string.IsNullOrWhiteSpace(AudioRecordingFolder)
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Sounds")
+            : Environment.ExpandEnvironmentVariables(AudioRecordingFolder);
+        return Path.GetFullPath(path);
+    }
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true,

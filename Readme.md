@@ -8,6 +8,7 @@ A small Windows tray app with everyday helpers. Starts with Windows, lives next 
 | **Color picker** | Copies the color under the mouse (HEX or RGB). Recent colors in the menu. Can be turned off in the menu (frees the hotkey for other apps). | `Ctrl+Alt+C` |
 | **Cursor coordinates** | Copies `X, Y` of the mouse. | `Ctrl+Alt+X` |
 | **Live overlay** | Small box next to the cursor showing X, Y and color. | `Ctrl+Alt+O` |
+| **Record system audio** | Captures system audio/speakers output to a WAV file. Saved to `Documents\Sounds` by default (configurable). Icon turns red while recording; tooltip shows elapsed time. | `Ctrl+Alt+R` |
 
 Right-click the tray icon for everything else (Start with Windows, edit settings, exit).
 
@@ -55,7 +56,10 @@ At least one modifier is required.
   "ColorFormat": "HEX",
   "ColorPickerHotkey": "Ctrl+Alt+C",
   "CoordsHotkey": "Ctrl+Alt+X",
-  "OverlayHotkey": "Ctrl+Alt+O"
+  "OverlayHotkey": "Ctrl+Alt+O",
+  "AudioRecorderEnabled": true,
+  "AudioRecordHotkey": "Ctrl+Alt+R",
+  "AudioRecordingFolder": "%USERPROFILE%\\Documents\\Sounds"
 }
 ```
 

@@ -12,14 +12,17 @@ internal sealed class TrayApp : ApplicationContext
 {
     private static readonly Color IdleColor = Color.FromArgb(70, 80, 100);
     private static readonly Color AwakeColor = Color.FromArgb(22, 163, 74);
+    private static readonly Color RecordingColor = Color.FromArgb(220, 38, 38);
 
     private readonly Settings _settings;
     private readonly HotkeyManager _hotkeys = new();
     private readonly NotifyIcon _tray;
     private readonly Icon _idleIcon = MakeIcon(IdleColor);
     private readonly Icon _awakeIcon = MakeIcon(AwakeColor);
+    private readonly Icon _recordingIcon = MakeIcon(RecordingColor);
 
     private readonly KeepAwakeHelper _keepAwake = new();
+    private readonly AudioRecorderHelper _audioRecorder = new();
     private readonly List<IHelper> _helpers;
 
     public TrayApp()
@@ -33,6 +36,7 @@ internal sealed class TrayApp : ApplicationContext
         _helpers = new List<IHelper>
         {
             _keepAwake,
+            _audioRecorder,
             new ColorPickerHelper(),
             new CursorCoordsHelper(),
         };
@@ -104,9 +108,20 @@ internal sealed class TrayApp : ApplicationContext
 
     private void RefreshTray()
     {
-        _tray.Icon = _keepAwake.IsActive ? _awakeIcon : _idleIcon;
-        string tip = $"DeskMate · Keep awake: {_keepAwake.Status}";
-        _tray.Text = tip.Length > 127 ? tip[..127] : tip;
+        if (_audioRecorder.IsRecording)
+        {
+            _tray.Icon = _recordingIcon;
+            var elapsed = _audioRecorder.Elapsed;
+            string timeStr = $"{(int)elapsed.TotalMinutes:D2}:{elapsed.Seconds:D2}";
+            string tip = $"DeskMate · RECORDING ({timeStr}) · Keep awake: {_keepAwake.Status}";
+            _tray.Text = tip.Length > 127 ? tip[..127] : tip;
+        }
+        else
+        {
+            _tray.Icon = _keepAwake.IsActive ? _awakeIcon : _idleIcon;
+            string tip = $"DeskMate · Keep awake: {_keepAwake.Status}";
+            _tray.Text = tip.Length > 127 ? tip[..127] : tip;
+        }
     }
 
     private static Icon MakeIcon(Color background)
@@ -147,6 +162,7 @@ internal sealed class TrayApp : ApplicationContext
         _tray.Dispose();
         _idleIcon.Dispose();
         _awakeIcon.Dispose();
+        _recordingIcon.Dispose();
         base.ExitThreadCore();
     }
 }

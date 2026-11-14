@@ -9,6 +9,7 @@ A small Windows tray app with everyday helpers. Starts with Windows, lives next 
 | **Cursor coordinates** | Copies `X, Y` of the mouse. | `Ctrl+Alt+X` |
 | **Live overlay** | Small box next to the cursor showing X, Y and color. | `Ctrl+Alt+O` |
 | **Record system audio** | Captures system audio/speakers output to a WAV file. Saved to `Documents\Sounds` by default (configurable). Icon turns red while recording; tooltip shows elapsed time. | `Ctrl+Alt+R` |
+| **Annotate screen** | Freezes the monitor under the cursor so you can draw on it (pen, highlighter, arrow, rectangle, ellipse, text; undo/redo). Region button or `Ctrl+Alt+Shift+D`: drag a rectangle and only that part is saved. `Enter` saves a PNG to `Pictures\DeskMate` (configurable) and copies it to the clipboard; `Esc` cancels. Can be turned off in the menu. | `Ctrl+Alt+D` |
 
 Right-click the tray icon for everything else (Start with Windows, edit settings, exit).
 
@@ -59,7 +60,11 @@ At least one modifier is required.
   "OverlayHotkey": "Ctrl+Alt+O",
   "AudioRecorderEnabled": true,
   "AudioRecordHotkey": "Ctrl+Alt+R",
-  "AudioRecordingFolder": "%USERPROFILE%\\Documents\\Sounds"
+  "AudioRecordingFolder": "%USERPROFILE%\\Documents\\Sounds",
+  "AnnotateEnabled": true,
+  "AnnotateHotkey": "Ctrl+Alt+D",
+  "AnnotateRegionHotkey": "Ctrl+Alt+Shift+D",
+  "AnnotateFolder": "%USERPROFILE%\\Pictures\\DeskMate"
 }
 ```
 

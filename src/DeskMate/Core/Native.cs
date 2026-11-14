@@ -41,4 +41,16 @@ internal static class Native
 
     [DllImport("user32.dll")]
     public static extern bool DestroyIcon(IntPtr hIcon);
+
+    public const uint MONITOR_DEFAULTTONEAREST = 2;
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr MonitorFromPoint(POINT pt, uint flags);
+
+    /// <summary>dpiType 0 = MDT_EFFECTIVE_DPI.</summary>
+    [DllImport("shcore.dll")]
+    public static extern int GetDpiForMonitor(IntPtr hmonitor, int dpiType, out uint dpiX, out uint dpiY);
+
+    [DllImport("user32.dll")]
+    public static extern bool SetForegroundWindow(IntPtr hWnd);
 }

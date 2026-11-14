@@ -37,6 +37,21 @@ internal sealed class Settings
         return Path.GetFullPath(path);
     }
 
+    // Annotate screen
+    public bool AnnotateEnabled { get; set; } = true;
+    public string AnnotateHotkey { get; set; } = "Ctrl+Alt+D";
+    public string AnnotateRegionHotkey { get; set; } = "Ctrl+Alt+Shift+D";
+    public string AnnotateFolder { get; set; } =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "DeskMate");
+
+    public string GetResolvedAnnotateFolder()
+    {
+        string path = string.IsNullOrWhiteSpace(AnnotateFolder)
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "DeskMate")
+            : Environment.ExpandEnvironmentVariables(AnnotateFolder);
+        return Path.GetFullPath(path);
+    }
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true,

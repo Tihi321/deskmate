@@ -39,6 +39,7 @@ internal sealed class TrayApp : ApplicationContext
             _audioRecorder,
             new ColorPickerHelper(),
             new CursorCoordsHelper(),
+            new AnnotateHelper(),
         };
         // ───────────────────────────────────────────────────────
 

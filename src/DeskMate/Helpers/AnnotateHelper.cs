@@ -155,13 +155,15 @@ internal sealed class AnnotateHelper : IHelper
     {
         try
         {
-            string? folder = null, name = null, saveError = null;
+            string? folder = null, name = null, saveError = null, savedPath = null;
             try
             {
                 folder = _ctx.Settings.GetResolvedAnnotateFolder();
                 Directory.CreateDirectory(folder);
                 name = UniqueFileName(folder);
-                image.Save(Path.Combine(folder, name), ImageFormat.Png);
+                string fullPath = Path.Combine(folder, name);
+                image.Save(fullPath, ImageFormat.Png);
+                savedPath = fullPath;
             }
             catch (Exception ex)
             {
@@ -169,7 +171,7 @@ internal sealed class AnnotateHelper : IHelper
             }
 
             bool copied;
-            try { copied = Clip.SetImage(image); }
+            try { copied = savedPath != null ? Clip.SetImageAndFile(image, savedPath) : Clip.SetImage(image); }
             catch { copied = false; }
 
             if (saveError == null)

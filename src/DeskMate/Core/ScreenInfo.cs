@@ -71,4 +71,21 @@ internal static class Clip
         }
         return false;
     }
+
+    /// <summary>
+    /// Puts an image plus a file drop list (CF_HDROP) holding <paramref name="filePath"/> on the clipboard,
+    /// so apps that prefer files paste the saved file instead of a temp copy of the bitmap.
+    /// </summary>
+    public static bool SetImageAndFile(Image image, string filePath)
+    {
+        var data = new DataObject();
+        data.SetData(DataFormats.Bitmap, true, image);
+        data.SetFileDropList(new System.Collections.Specialized.StringCollection { Path.GetFullPath(filePath) });
+        for (int i = 0; i < 5; i++)
+        {
+            try { Clipboard.SetDataObject(data, true); return true; }
+            catch (System.Runtime.InteropServices.ExternalException) { Thread.Sleep(40); }
+        }
+        return false;
+    }
 }
